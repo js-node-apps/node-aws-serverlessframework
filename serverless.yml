@@ -1,0 +1,20 @@
+service: node-aws-serverlessframework
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  profile: ServerlessAccount
+
+functions:
+  hello:
+    handler: handler.hello
+  user:
+    handler: src/handlers/user.getUser
+    events:
+      - http:
+          path: user/{id}
+          method: GET
+          cors: true
