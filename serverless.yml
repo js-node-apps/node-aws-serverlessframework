@@ -7,10 +7,23 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
   profile: ServerlessAccount
+  environment:
+    tableName: user-data
+
+custom:
+  tableName: user-data
+
 
 functions:
   hello:
     handler: handler.hello
+  readPlayer:
+    handler: src/handlers/player.getPlayer
+    events:
+      - http:
+          path: player/{id}
+          method: GET
+          cors: true
   user:
     handler: src/handlers/user.getUser
     events:
@@ -18,3 +31,26 @@ functions:
           path: user/{id}
           method: GET
           cors: true
+  readUserFromDynamo:
+    handler: src/handlers/user.readUser/{ID}
+    events:
+      - http:
+          path: user/{id}
+          method: GET
+          cors: true
+  
+resources:
+  Resources:
+    MyDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+

@@ -1,4 +1,5 @@
 const httpResponses = require("../helpers/responses");
+const Dynamo = require("../dal/Dynamo");
 
 module.exports.getUser = async (event) => {
   console.log("event.pathParameters", event.pathParameters);
@@ -15,6 +16,25 @@ module.exports.getUser = async (event) => {
   }
 
   return httpResponses._200(userData);
+};
+
+module.exports.readUser = async (event) => {
+  console.log("event", event);
+
+  if (!event.pathParameters || !event.pathParameters.ID) {
+  }
+
+  const tableName = process.env.tableName;
+
+  const users = await Dynamo.get(ID, tableName).catch((err) => {
+    console.log("error");
+
+    return null;
+  });
+
+  if (!users) {
+    return httpResponses._200({ users });
+  }
 };
 
 const userData = [
