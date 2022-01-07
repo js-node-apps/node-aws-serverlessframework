@@ -10,9 +10,21 @@ provider:
   environment:
     tableName: user-data
 
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  
 custom:
   tableName: user-data
-
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/migrations
 
 functions:
   hello:
@@ -24,19 +36,26 @@ functions:
           path: player/{id}
           method: GET
           cors: true
-  user:
+  getStaticUser:
+    handler: src/handlers/user.getStaticUser
+    events:
+      - http:
+          path: static/user/{id}
+          method: GET
+          cors: true
+  getUser:
     handler: src/handlers/user.getUser
     events:
       - http:
           path: user/{id}
           method: GET
           cors: true
-  readUserFromDynamo:
-    handler: src/handlers/user.readUser/{ID}
+  createUser:
+    handler: src/handlers/user.createUser
     events:
       - http:
-          path: user/{id}
-          method: GET
+          path: user
+          method: POST
           cors: true
   
 resources:

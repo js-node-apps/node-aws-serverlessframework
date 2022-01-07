@@ -1,7 +1,8 @@
 const httpResponses = require("../helpers/responses");
 const Dynamo = require("../dal/Dynamo");
+const userData = require("../helpers/userData");
 
-module.exports.getUser = async (event) => {
+module.exports.getStaticUser = async (event) => {
   console.log("event.pathParameters", event.pathParameters);
 
   const userId = event.pathParameters.id;
@@ -18,39 +19,40 @@ module.exports.getUser = async (event) => {
   return httpResponses._200(userData);
 };
 
-module.exports.readUser = async (event) => {
-  console.log("event", event);
+module.exports.getUser = async (event) => {
+  console.log("event", event.body);
 
-  if (!event.pathParameters || !event.pathParameters.ID) {
+  console.log("event.pathParameters.ID", event.pathParameters.id);
+
+  if (!event.pathParameters || !event.pathParameters.id) {
+    return httpResponses._400({}, 400, "User id expected");
   }
 
   const tableName = process.env.tableName;
 
-  const users = await Dynamo.get(ID, tableName).catch((err) => {
-    console.log("error");
+  const userData = await Dynamo.get(event.pathParameters.id, tableName).catch(
+    (err) => {
+      console.log("Error occurred, cannot read user record");
 
-    return null;
-  });
+      return null;
+    }
+  );
 
-  if (!users) {
-    return httpResponses._200({ users });
+  if (!userData) {
+    return httpResponses._200({ userData });
   }
 };
 
-const userData = [
-  {
-    id: 201,
-    name: "Paul Bryant",
-    address: "NZ",
-  },
-  {
-    id: 202,
-    name: "James Pott",
-    address: "AUS",
-  },
-  {
-    id: 203,
-    name: "Justin Lazaro",
-    address: "Pheleppines",
-  },
-];
+module.exports.createUser = async event => {
+
+  const user = JSON.parse(event.body);
+
+  const tableName = process.env.tableName;
+
+  const newUser = await Dynamo.write(user, tableName).catch(err => {
+    console.log('error ', err);
+    return null;
+  });
+
+  return httpResponses._200({ newUser });
+}

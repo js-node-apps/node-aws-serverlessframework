@@ -3,11 +3,11 @@ const httpResponses = require("../helpers/responses");
 module.exports.getPlayer = async (event) => {
   console.log("event", event.path);
 
-  const res = {
+  const palyer = {
     name: "Bret Lee",
     role: "fast bowler",
     country: "Australia",
   };
 
-  return httpResponses._200({ res });
+  return httpResponses._200(palyer);
 };
