@@ -1,0 +1,75 @@
+service: node-aws-serverlessframework
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  profile: ServerlessAccount
+  environment:
+    tableName: user-data
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  
+custom:
+  tableName: user-data
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/migrations
+
+functions:
+  hello:
+    handler: handler.hello
+  readPlayer:
+    handler: src/handlers/player.getPlayer
+    events:
+      - http:
+          path: player/{id}
+          method: GET
+          cors: true
+  getStaticUser:
+    handler: src/handlers/user.getStaticUser
+    events:
+      - http:
+          path: static/user/{id}
+          method: GET
+          cors: true
+  getUser:
+    handler: src/handlers/user.getUser
+    events:
+      - http:
+          path: user/{id}
+          method: GET
+          cors: true
+  createUser:
+    handler: src/handlers/user.createUser
+    events:
+      - http:
+          path: user
+          method: POST
+          cors: true
+  
+resources:
+  Resources:
+    MyDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+

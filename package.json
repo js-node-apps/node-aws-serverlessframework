@@ -1,0 +1,27 @@
+{
+  "name": "node-aws-serverlessframework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {
+    "aws-sdk": "^2.1051.0"
+  },
+  "devDependencies": {
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-offline": "^8.3.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/js-node-apps/node-aws-serverlessframework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/js-node-apps/node-aws-serverlessframework/issues"
+  },
+  "homepage": "https://github.com/js-node-apps/node-aws-serverlessframework#readme"
+}
